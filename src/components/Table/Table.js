@@ -1,5 +1,4 @@
- 
-const PageNotFound = () => {
+ const Table = () => {
   return (
     <div>
       <h1>Table</h1>
@@ -7,4 +6,4 @@ const PageNotFound = () => {
   );
 };
 
-export default PageNotFound;
+export default Table;
