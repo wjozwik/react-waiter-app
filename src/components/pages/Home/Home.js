@@ -1,8 +1,18 @@
+import { Row, Col } from 'react-bootstrap';
+import TablesList from '../../features/TablesList/TablesList';
+
 const Home = () => {
   return (
-    <div>
-      <h1>Home page</h1>
-    </div>
+    <>
+      <Row>
+        <Col className='d-flex justify-content-between'>
+          <h1>All tables</h1>
+        </Col>
+      </Row>
+      <Row>
+        <TablesList />
+      </Row>
+    </>
   );
 };
 
