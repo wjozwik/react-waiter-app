@@ -1,18 +1,63 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getTableById } from '../../../redux/tablesRedux';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { editTableRequest } from '../../../redux/tablesRedux';
 
 const EditTable = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const tableData = useSelector((state) => getTableById(state, id));
-  console.log(tableData);
-  const [tableStatus, setTableStatus] = useState(tableData?.status);
-  const [peopleAmount, setPeopleAmount] = useState(tableData?.peopleAmount);
-  const [maxPeopleAmount, setMaxPeopleAmount] = useState(tableData?.maxPeopleAmount);
+  const [tableStatus, setTableStatus] = useState(tableData?.status || 'Free');
+  const [peopleAmount, setPeopleAmount] = useState(tableData?.peopleAmount || 0);
+  const [maxPeopleAmount, setMaxPeopleAmount] = useState(tableData?.maxPeopleAmount || 0);
   const [bill, setBill] = useState(tableData?.bill);
+
+  const tableStatusHandler = (e) => {
+    e.preventDefault();
+    setTableStatus(e.target.value);
+    if ((e.target.value === 'Free') | (e.target.value === 'Cleaning')) {
+      setPeopleAmount(0);
+    }
+  };
+
+  const maxPeopleAmountHandler = (e) => {
+    e.preventDefault();
+    const newValue = parseInt(e.target.value, 10);
+    if (newValue <= 10) {
+      setMaxPeopleAmount(newValue);
+      if (newValue < peopleAmount) {
+        setPeopleAmount(newValue);
+      }
+    }
+  };
+
+  const peopleAmountHandler = (e) => {
+    e.preventDefault();
+    const newValue = parseInt(e.target.value);
+    if (newValue <= 10 && newValue <= maxPeopleAmount) {
+      setPeopleAmount(newValue);
+    }
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+
+    dispatch(
+      editTableRequest({
+        id: id,
+        status: tableStatus,
+        peopleAmount: peopleAmount,
+        maxPeopleAmount: maxPeopleAmount,
+        bill: bill,
+      })
+    );
+    navigate('/');
+  };
 
   return (
     <>
@@ -26,7 +71,7 @@ const EditTable = () => {
             Status:
           </Form.Label>
           <Col xs={9} sm={7} md={7} lg={5} xl={3}>
-            <Form.Select name='status' aria-label='Select status' value={tableStatus} onChange={(e) => setTableStatus(e.target.value)}>
+            <Form.Select name='status' aria-label='Select status' value={tableStatus} onChange={tableStatusHandler}>
               <option value='Free'>Free</option>
               <option value='Reserved'>Reserved</option>
               <option value='Busy'>Busy</option>
@@ -44,11 +89,11 @@ const EditTable = () => {
                 <Form.Control
                   name='peopleAmount'
                   type='number'
-                  min='1'
+                  min='0'
                   max={maxPeopleAmount}
                   className='text-center'
                   value={peopleAmount}
-                  onChange={(e) => setPeopleAmount(e.target.value)}
+                  onChange={peopleAmountHandler}
                 />
               </Col>
               <Col xs={1} className='d-flex align-items-center justify-content-center'>
@@ -58,12 +103,12 @@ const EditTable = () => {
                 <Form.Control
                   name='maxPeopleAmount'
                   type='number'
-                  min='1'
+                  min='0'
                   max='10'
                   placeholder='Max'
                   className='text-center'
                   value={maxPeopleAmount}
-                  onChange={(e) => setMaxPeopleAmount(e.target.value)}
+                  onChange={maxPeopleAmountHandler}
                 />
               </Col>
             </Row>
@@ -84,7 +129,7 @@ const EditTable = () => {
             </Form.Label>
             <Col>
               <Row>
-                <Col xs={4} sm={3} md={3} lg={2} xl={2}>
+                <Col xs={4} sm={3} md={3} lg={2} xl={1}>
                   <Form.Control
                     name='bill'
                     className='text-center'
@@ -101,7 +146,9 @@ const EditTable = () => {
             </Col>
           </Form.Group>
         )}
-        <Button type='submit'>Update</Button>
+        <Button type='submit' onClick={submitHandler}>
+          Update
+        </Button>
       </Form>
     </>
   );
