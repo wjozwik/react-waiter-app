@@ -1,6 +1,6 @@
 import { getTables } from '../../../redux/tablesRedux';
 import { useSelector } from 'react-redux/es/hooks/useSelector';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Button, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const TablesList = () => {
@@ -9,6 +9,11 @@ const TablesList = () => {
 
   return (
     <div>
+      {tables.length === 0 && (
+        <div className="text-center">
+          <Spinner animation="border" />
+        </div>
+      )}
       {tables.map((table) => (
         <Row key={table.id} className='border-bottom py-3 align-items-center'>
           <Col xs={3} md={2} className='align-items-center d-flex'>
