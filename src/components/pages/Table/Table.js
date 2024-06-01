@@ -1,7 +1,9 @@
+import EditTable from '../../features/EditTable/EditTable';
+
 const Table = () => {
   return (
     <div>
-      <h1>Table page</h1>
+      <EditTable />
     </div>
   );
 };
